@@ -22,6 +22,29 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // 每日上限检查
+    const taskConfig = TASK_TYPES[type];
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+
+    const completedToday = await prisma.dailyTask.count({
+      where: {
+        userId,
+        type,
+        completed: true,
+        date: { gte: today, lt: tomorrow },
+      },
+    });
+
+    if (completedToday >= taskConfig.dailyMax) {
+      return NextResponse.json(
+        { error: taskConfig.limitReason },
+        { status: 400 }
+      );
+    }
+
     const task = await prisma.dailyTask.create({
       data: {
         userId,

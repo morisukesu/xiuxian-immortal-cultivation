@@ -48,6 +48,26 @@ export default function HomePage() {
           </p>
         </div>
 
+        {/* 三步引导 */}
+        <div className="bg-stone-900/50 border border-stone-800 rounded-xl p-5 text-left space-y-3">
+          <p className="text-stone-300 text-sm font-medium">⚔️ 道友，修炼只需三步：</p>
+          <div className="space-y-2 text-sm">
+            <div className="flex items-start gap-3">
+              <span className="text-amber-400 font-bold shrink-0 w-5">1</span>
+              <span className="text-stone-400">取道号 → 测灵根 → 踏入仙途</span>
+            </div>
+            <div className="flex items-start gap-3">
+              <span className="text-amber-400 font-bold shrink-0 w-5">2</span>
+              <span className="text-stone-400">每天学习/运动/早睡 → 回来点一下</span>
+            </div>
+            <div className="flex items-start gap-3">
+              <span className="text-amber-400 font-bold shrink-0 w-5">3</span>
+              <span className="text-stone-400">AI 把你的坚持写成修仙故事</span>
+            </div>
+          </div>
+          <p className="text-stone-500 text-xs pt-1">⚠️ 真的去做再点。靠自觉——骗系统没意义，你骗不了自己。</p>
+        </div>
+
         {/* 特色介绍 */}
         <div className="grid grid-cols-2 gap-3">
           <Card className="bg-stone-800/50 border-stone-600/40">

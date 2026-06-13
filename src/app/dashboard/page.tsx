@@ -128,6 +128,8 @@ export default function DashboardPage() {
       if (data.task) {
         setTasks((prev) => [data.task, ...prev]);
         toast.success(`开始${TASK_TYPES[type]?.name || "修炼"}！`);
+      } else if (data.error) {
+        toast.error(data.error);
       }
     } catch {
       toast.error("创建任务失败");
@@ -380,6 +382,13 @@ export default function DashboardPage() {
 
   return (
     <main className="flex-1 p-4 max-w-lg mx-auto min-h-screen space-y-4">
+      {/* BETA 测试声明 */}
+      <div className="bg-amber-950/30 border border-amber-800/40 rounded-lg px-4 py-2.5 text-center">
+        <p className="text-amber-400 text-xs">
+          🧪 测试阶段 · 数据后续可能清零 ·
+          <span className="text-amber-300">道友的反馈正在塑造这个世界</span>
+        </p>
+      </div>
       {/* 顶部状态栏 */}
       <Card className="bg-stone-800/60 border-stone-600/50 overflow-hidden relative ring-1 ring-amber-900/20">
         <div className="absolute top-0 left-0 right-0 h-1 bg-stone-800">

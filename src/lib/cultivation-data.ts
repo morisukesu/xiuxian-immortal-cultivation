@@ -162,6 +162,8 @@ export interface TaskType {
   description: string;
   baseExp: number;
   cultivationName: string;  // 修炼对应名称
+  dailyMax: number;         // 每日上限
+  limitReason: string;      // 上限提示
 }
 
 export const TASK_TYPES: Record<string, TaskType> = {
@@ -172,6 +174,8 @@ export const TASK_TYPES: Record<string, TaskType> = {
     description: "读书学习，参悟天地至理",
     baseExp: 20,
     cultivationName: "静坐悟道，灵台清明",
+    dailyMax: 3,
+    limitReason: "今日悟道已达上限，学太久效率会降，道友明日再来",
   },
   EXERCISE: {
     id: "EXERCISE",
@@ -180,6 +184,8 @@ export const TASK_TYPES: Record<string, TaskType> = {
     description: "锻炼体魄，淬炼肉身",
     baseExp: 25,
     cultivationName: "运转功法，淬炼肉身",
+    dailyMax: 2,
+    limitReason: "今日锻体已达上限，过度修炼伤身，道友明日再来",
   },
   SLEEP: {
     id: "SLEEP",
@@ -188,6 +194,8 @@ export const TASK_TYPES: Record<string, TaskType> = {
     description: "早睡养神，蓄养灵力",
     baseExp: 15,
     cultivationName: "抱元守一，蕴养元神",
+    dailyMax: 1,
+    limitReason: "今日已静修过了，一天只睡一次，道友安心休息",
   },
   MEDITATE: {
     id: "MEDITATE",
@@ -196,6 +204,8 @@ export const TASK_TYPES: Record<string, TaskType> = {
     description: "冥想打坐，感悟天道",
     baseExp: 30,
     cultivationName: "五心朝天，感悟天地灵气",
+    dailyMax: 2,
+    limitReason: "今日打坐已达上限，心神需要消化，道友明日再来",
   },
   CUSTOM: {
     id: "CUSTOM",
@@ -204,6 +214,8 @@ export const TASK_TYPES: Record<string, TaskType> = {
     description: "自定义修炼任务",
     baseExp: 20,
     cultivationName: "随心而修，道法自然",
+    dailyMax: 2,
+    limitReason: "今日历练已达上限，随心不逾矩，道友明日再来",
   },
 };
 
