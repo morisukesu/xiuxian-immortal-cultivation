@@ -50,37 +50,37 @@ export default function HomePage() {
 
         {/* 特色介绍 */}
         <div className="grid grid-cols-2 gap-3">
-          <Card className="bg-stone-900/50 border-stone-800">
+          <Card className="bg-stone-800/50 border-stone-600/40">
             <CardHeader className="pb-2">
               <BookOpen className="w-5 h-5 text-amber-400 mx-auto" />
-              <CardTitle className="text-sm text-stone-300 text-center">学习=悟道</CardTitle>
+              <CardTitle className="text-sm text-stone-200 text-center">学习=悟道</CardTitle>
             </CardHeader>
             <CardContent className="text-xs text-stone-500 text-center">
               今日学习打卡，即修炼悟道
             </CardContent>
           </Card>
-          <Card className="bg-stone-900/50 border-stone-800">
+          <Card className="bg-stone-800/50 border-stone-600/40">
             <CardHeader className="pb-2">
               <Sword className="w-5 h-5 text-red-400 mx-auto" />
-              <CardTitle className="text-sm text-stone-300 text-center">运动=锻体</CardTitle>
+              <CardTitle className="text-sm text-stone-200 text-center">运动=锻体</CardTitle>
             </CardHeader>
             <CardContent className="text-xs text-stone-500 text-center">
               强身健体，淬炼肉身修为
             </CardContent>
           </Card>
-          <Card className="bg-stone-900/50 border-stone-800">
+          <Card className="bg-stone-800/50 border-stone-600/40">
             <CardHeader className="pb-2">
               <Moon className="w-5 h-5 text-blue-400 mx-auto" />
-              <CardTitle className="text-sm text-stone-300 text-center">早睡=静修</CardTitle>
+              <CardTitle className="text-sm text-stone-200 text-center">早睡=静修</CardTitle>
             </CardHeader>
             <CardContent className="text-xs text-stone-500 text-center">
               早睡养神，蕴养元神灵力
             </CardContent>
           </Card>
-          <Card className="bg-stone-900/50 border-stone-800">
+          <Card className="bg-stone-800/50 border-stone-600/40">
             <CardHeader className="pb-2">
               <Sparkles className="w-5 h-5 text-purple-400 mx-auto" />
-              <CardTitle className="text-sm text-stone-300 text-center">AI叙事</CardTitle>
+              <CardTitle className="text-sm text-stone-200 text-center">AI叙事</CardTitle>
             </CardHeader>
             <CardContent className="text-xs text-stone-500 text-center">
               每次修炼都有专属修仙故事

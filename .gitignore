@@ -45,3 +45,7 @@ next-env.d.ts
 # database
 *.db
 *.db-journal
+
+# 视频制作辅助（不公开）
+VIDEO_*.md
+public/cover.html

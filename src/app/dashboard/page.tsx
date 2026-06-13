@@ -62,6 +62,13 @@ export default function DashboardPage() {
   const [narrative, setNarrative] = useState<string | null>(null);
   const [isBreakingThrough, setIsBreakingThrough] = useState(false);
   const [canBreak, setCanBreak] = useState(false);
+  const [encounter, setEncounter] = useState<{
+    title: string;
+    narrative: string;
+    choices: { text: string; risk: "low" | "medium" | "high"; hint: string }[];
+  } | null>(null);
+  const [isExploring, setIsExploring] = useState(false);
+  const [encounterResult, setEncounterResult] = useState<string | null>(null);
 
   // 加载用户数据
   const loadData = useCallback(async () => {
@@ -158,6 +165,31 @@ export default function DashboardPage() {
 
       // 生成叙事
       await generateNarrative(data.cultivator, taskId);
+
+      // 15% 概率触发随机奇遇
+      if (Math.random() < 0.15) {
+        setTimeout(async () => {
+          try {
+            const encRes = await fetch("/api/narrative", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ userId, type: "ENCOUNTER" }),
+            });
+            const encData = await encRes.json();
+            if (encData.narrative && !encData.error) {
+              setEncounter(encData.narrative);
+              if (encData.event) {
+                setEvents((prev) => [encData.event, ...prev]);
+              }
+              toast("⚡ 修炼途中遇到了奇遇！", {
+                description: encData.narrative.title,
+              });
+            }
+          } catch {
+            // 静默失败，不打断用户
+          }
+        }, 2000);
+      }
     } catch {
       toast.error("操作失败");
     }
@@ -251,6 +283,72 @@ export default function DashboardPage() {
     }
   };
 
+  // 奇遇探索
+  const triggerEncounter = async () => {
+    setIsExploring(true);
+    setEncounter(null);
+    setEncounterResult(null);
+
+    try {
+      const res = await fetch("/api/narrative", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId, type: "ENCOUNTER" }),
+      });
+
+      const data = await res.json();
+
+      if (data.error) {
+        toast.error(data.error);
+        return;
+      }
+
+      if (data.narrative) {
+        setEncounter(data.narrative);
+      }
+
+      if (data.event) {
+        setEvents((prev) => [data.event, ...prev]);
+      }
+    } catch {
+      toast.error("探索失败，请重试");
+    } finally {
+      setIsExploring(false);
+    }
+  };
+
+  // 选择奇遇选项
+  const chooseEncounter = async (choiceIndex: number) => {
+    if (!encounter) return;
+
+    try {
+      const res = await fetch("/api/narrative", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId, type: "ENCOUNTER", choiceIndex }),
+      });
+
+      const data = await res.json();
+
+      if (data.error) {
+        toast.error(data.error);
+        return;
+      }
+
+      const choice = encounter.choices[choiceIndex];
+      setEncounterResult(
+        `你选择了「${choice.text}」——修炼值 +${data.expBonus}！${choice.hint}`
+      );
+
+      // 刷新修炼值
+      if (data.cultivator) {
+        setCultivator(data.cultivator);
+      }
+    } catch {
+      toast.error("选择失败");
+    }
+  };
+
   if (isLoading) {
     return (
       <main className="flex-1 flex items-center justify-center min-h-screen">
@@ -283,7 +381,7 @@ export default function DashboardPage() {
   return (
     <main className="flex-1 p-4 max-w-lg mx-auto min-h-screen space-y-4">
       {/* 顶部状态栏 */}
-      <Card className="bg-stone-900/80 border-stone-700 overflow-hidden relative">
+      <Card className="bg-stone-800/60 border-stone-600/50 overflow-hidden relative ring-1 ring-amber-900/20">
         <div className="absolute top-0 left-0 right-0 h-1 bg-stone-800">
           <div
             className="h-full bg-gradient-to-r from-amber-600 to-yellow-500 transition-all duration-1000"
@@ -304,7 +402,7 @@ export default function DashboardPage() {
                  cultivator.realm.includes("筑基") ? "🟢" : "⚪"}
               </span>
               <div>
-                <CardTitle className="text-lg flex items-center gap-2">
+                <CardTitle className="text-lg flex items-center gap-2 text-stone-100">
                   {cultivator.name}
                   <Badge
                     className="text-xs"
@@ -367,7 +465,7 @@ export default function DashboardPage() {
 
       {/* AI 修炼叙事 */}
       {narrative && (
-        <Card className="bg-stone-900/50 border-amber-900/30 animate-in fade-in slide-in-from-bottom-4 duration-500">
+        <Card className="bg-stone-800/50 border-amber-800/30 ring-1 ring-amber-900/10 animate-in fade-in slide-in-from-bottom-4 duration-500">
           <CardContent className="p-4">
             <div className="flex items-center gap-2 mb-2">
               <Sparkles className="w-4 h-4 text-amber-400" />
@@ -381,9 +479,9 @@ export default function DashboardPage() {
       )}
 
       {/* 每日任务 */}
-      <Card className="bg-stone-900/80 border-stone-700">
+      <Card className="bg-stone-800/60 border-stone-600/50">
         <CardHeader className="pb-2">
-          <CardTitle className="text-base text-stone-200 flex items-center gap-2">
+          <CardTitle className="text-base text-stone-100 flex items-center gap-2">
             <TrendingUp className="w-4 h-4 text-amber-400" />
             今日修炼
           </CardTitle>
@@ -463,10 +561,95 @@ export default function DashboardPage() {
         </CardContent>
       </Card>
 
-      {/* 修炼历史 */}
-      <Card className="bg-stone-900/80 border-stone-700">
+      {/* 奇遇探索 */}
+      <Card className="bg-stone-800/60 border-stone-600/50">
         <CardHeader className="pb-2">
-          <CardTitle className="text-base text-stone-200 flex items-center gap-2">
+          <CardTitle className="text-base text-stone-100 flex items-center gap-2">
+            <Sparkles className="w-4 h-4 text-purple-400" />
+            奇遇探索
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          {!encounter && !encounterResult && (
+            <div className="text-center">
+              <p className="text-stone-500 text-sm mb-3">
+                修炼途中，机缘巧合之事时有发生。探索未知，或有所获。
+              </p>
+              <Button
+                className="bg-gradient-to-r from-purple-700 to-violet-700 hover:from-purple-600 hover:to-violet-600"
+                onClick={triggerEncounter}
+                disabled={isExploring}
+              >
+                {isExploring ? (
+                  <>正在感应天地灵气...</>
+                ) : (
+                  <>
+                    <Sparkles className="w-4 h-4 mr-2" />
+                    外出探索
+                  </>
+                )}
+              </Button>
+            </div>
+          )}
+
+          {encounter && !encounterResult && (
+            <div className="space-y-3 animate-in fade-in slide-in-from-bottom-2 duration-300">
+              <div className="bg-stone-900/60 rounded-lg p-3 border border-purple-900/30">
+                <p className="text-purple-400 text-sm font-medium mb-1">
+                  ⚡ {encounter.title}
+                </p>
+                <p className="text-stone-300 text-sm leading-relaxed">
+                  {encounter.narrative}
+                </p>
+              </div>
+              <p className="text-stone-500 text-xs">面临抉择——</p>
+              <div className="space-y-2">
+                {encounter.choices.map((choice, i) => (
+                  <button
+                    key={i}
+                    className={`w-full text-left p-2.5 rounded-lg border text-sm transition-all hover:scale-[1.02] ${
+                      choice.risk === "high"
+                        ? "border-red-800/50 bg-red-950/20 hover:bg-red-950/40 text-red-300"
+                        : choice.risk === "medium"
+                        ? "border-yellow-800/50 bg-yellow-950/20 hover:bg-yellow-950/40 text-yellow-300"
+                        : "border-green-800/50 bg-green-950/20 hover:bg-green-950/40 text-green-300"
+                    }`}
+                    onClick={() => chooseEncounter(i)}
+                  >
+                    <span className="text-xs opacity-70">
+                      {choice.risk === "high" ? "⚠ 高风险" : choice.risk === "medium" ? "⚡ 中风险" : "🍃 低风险"}
+                    </span>
+                    <span className="ml-2">{choice.text}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {encounterResult && (
+            <div className="bg-stone-900/60 rounded-lg p-4 border border-green-900/30 animate-in fade-in duration-300">
+              <p className="text-green-400 text-sm font-medium mb-2">✅ 奇遇结束</p>
+              <p className="text-stone-300 text-sm leading-relaxed">{encounterResult}</p>
+              <Button
+                variant="outline"
+                size="sm"
+                className="mt-3 border-stone-700 text-stone-400"
+                onClick={() => {
+                  setEncounter(null);
+                  setEncounterResult(null);
+                }}
+              >
+                继续修炼
+              </Button>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* 修炼历史 */}
+      <Card className="bg-stone-800/60 border-stone-600/50">
+        <CardHeader className="pb-2">
+          <CardTitle className="text-base text-stone-100 flex items-center gap-2">
             <History className="w-4 h-4 text-stone-400" />
             修炼记录
           </CardTitle>

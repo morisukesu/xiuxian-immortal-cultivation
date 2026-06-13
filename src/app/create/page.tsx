@@ -137,7 +137,7 @@ export default function CreatePage() {
         </Button>
 
         {step === "name" && (
-          <Card className="bg-stone-900/80 border-stone-700">
+          <Card className="bg-stone-800/60 border-stone-600/50">
             <CardHeader>
               <CardTitle className="text-xl text-amber-400 flex items-center gap-2">
                 <Sparkles className="w-5 h-5" />
@@ -183,7 +183,7 @@ export default function CreatePage() {
         )}
 
         {step === "quiz" && (
-          <Card className="bg-stone-900/80 border-stone-700">
+          <Card className="bg-stone-800/60 border-stone-600/50">
             <CardHeader>
               <CardTitle className="text-xl text-amber-400">
                 灵根测试 ({quizIndex + 1}/{QUIZ_QUESTIONS.length})
@@ -216,7 +216,7 @@ export default function CreatePage() {
         )}
 
         {step === "result" && spiritualRoot && (
-          <Card className="bg-stone-900/80 border-stone-700">
+          <Card className="bg-stone-800/60 border-stone-600/50">
             <CardHeader className="text-center">
               <div className="text-4xl mb-2">
                 {spiritualRoot === "天灵根" ? "🌟" :

@@ -109,10 +109,70 @@ export async function PATCH(request: NextRequest) {
       }),
     ]);
 
+    // ── 随机奇遇触发检测 ──
+    let encounterResult = null;
+    try {
+      const {
+        shouldTriggerEncounter,
+        pickRandomEncounter,
+        serializeEncounter,
+      } = await import("@/lib/encounter-data");
+
+      // 检查今日已触发次数
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const tomorrow = new Date(today);
+      tomorrow.setDate(tomorrow.getDate() + 1);
+
+      const encountersToday = await prisma.gameEvent.count({
+        where: {
+          cultivatorId: user.cultivator.id,
+          type: "ENCOUNTER",
+          createdAt: {
+            gte: today,
+            lt: tomorrow,
+          },
+        },
+      });
+
+      if (shouldTriggerEncounter()) {
+        const encounter = pickRandomEncounter(encountersToday);
+        if (encounter) {
+          // 创建未结算的奇遇事件
+          const gameEvent = await prisma.gameEvent.create({
+            data: {
+              cultivatorId: user.cultivator.id,
+              type: "ENCOUNTER",
+              title: encounter.title,
+              narrative: encounter.narrative,
+              choices: JSON.stringify(
+                encounter.choices.map((c) => ({
+                  riskLevel: c.riskLevel,
+                  text: c.text,
+                  hint: c.hint,
+                }))
+              ),
+              chosenOption: null,
+              reward: null,
+            },
+          });
+
+          encounterResult = {
+            eventId: gameEvent.id,
+            encounter: serializeEncounter(encounter),
+          };
+        }
+      }
+    } catch (encounterErr) {
+      // 奇遇触发失败不影响任务完成
+      console.warn("奇遇触发异常，跳过:", encounterErr);
+    }
+
     return NextResponse.json({
       task: updatedTask,
       cultivator: updatedCultivator,
       expGained,
+      encounter: encounterResult, // null 或奇遇数据
     });
   } catch (error) {
     console.error("完成任务失败:", error);
