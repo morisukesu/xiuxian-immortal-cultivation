@@ -22,6 +22,15 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // 检查账号名是否已存在
+    const existing = await prisma.user.findUnique({ where: { name: userName } });
+    if (existing) {
+      return NextResponse.json(
+        { error: "该账号名已被占用" },
+        { status: 409 }
+      );
+    }
+
     // 创建用户 + 修炼者
     const user = await prisma.user.create({
       data: {

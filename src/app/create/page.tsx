@@ -68,15 +68,26 @@ export default function CreatePage() {
   const [step, setStep] = useState<"name" | "quiz" | "result">("name");
   const [userName, setUserName] = useState("");
   const [cultivatorName, setCultivatorName] = useState("");
+  const [password, setPassword] = useState("");
+  const [passwordConfirm, setPasswordConfirm] = useState("");
   const [quizIndex, setQuizIndex] = useState(0);
   const [elements, setElements] = useState<string[]>([]);
   const [spiritualRoot, setSpiritualRoot] = useState<SpiritualRoot | null>(null);
   const [isCreating, setIsCreating] = useState(false);
 
   const handleNameSubmit = () => {
-    if (userName.trim() && cultivatorName.trim()) {
-      setStep("quiz");
+    if (!userName.trim() || !cultivatorName.trim()) return;
+    if (!password || password.length < 4) {
+      const { toast } = require("sonner");
+      toast.error("密码至少 4 位");
+      return;
     }
+    if (password !== passwordConfirm) {
+      const { toast } = require("sonner");
+      toast.error("两次密码不一致");
+      return;
+    }
+    setStep("quiz");
   };
 
   const handleQuizAnswer = (element: string) => {
@@ -96,11 +107,12 @@ export default function CreatePage() {
     setIsCreating(true);
 
     try {
-      const res = await fetch("/api/cultivator", {
+      const res = await fetch("/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          userName: userName.trim(),
+          name: userName.trim(),
+          password,
           cultivatorName: cultivatorName.trim(),
           spiritualRoot,
         }),
@@ -149,9 +161,9 @@ export default function CreatePage() {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
-                <label className="text-sm text-stone-400">你的昵称</label>
+                <label className="text-sm text-stone-400">账号名（唯一，登录用）</label>
                 <Input
-                  placeholder="例如：张三"
+                  placeholder="例如：zhangsan123"
                   value={userName}
                   onChange={(e) => setUserName(e.target.value)}
                   className="bg-stone-800 border-stone-600 text-stone-100"
@@ -159,7 +171,7 @@ export default function CreatePage() {
                 />
               </div>
               <div className="space-y-2">
-                <label className="text-sm text-stone-400">修仙道号</label>
+                <label className="text-sm text-stone-400">修仙道号（展示给道友看的）</label>
                 <Input
                   placeholder="例如：青雲真人"
                   value={cultivatorName}
@@ -167,9 +179,29 @@ export default function CreatePage() {
                   className="bg-stone-800 border-stone-600 text-stone-100"
                   maxLength={12}
                 />
-                <p className="text-xs text-stone-600">
-                  道号将在修仙世界中使用，请慎重取名
-                </p>
+                <p className="text-xs text-stone-600">道号可重名，取个响亮的吧</p>
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm text-stone-400">密码</label>
+                <Input
+                  type="password"
+                  placeholder="至少 4 位"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="bg-stone-800 border-stone-600 text-stone-100"
+                  maxLength={50}
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm text-stone-400">确认密码</label>
+                <Input
+                  type="password"
+                  placeholder="再次输入密码"
+                  value={passwordConfirm}
+                  onChange={(e) => setPasswordConfirm(e.target.value)}
+                  className="bg-stone-800 border-stone-600 text-stone-100"
+                  maxLength={50}
+                />
               </div>
               <Button
                 className="w-full bg-gradient-to-r from-amber-600 to-yellow-600 hover:from-amber-500 hover:to-yellow-500"

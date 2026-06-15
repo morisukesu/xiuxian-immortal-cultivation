@@ -32,9 +32,9 @@ export const SPIRITUAL_ROOTS: Record<SpiritualRoot, SpiritualRootInfo> = {
   },
   "四灵根": {
     name: "四灵根",
-    description: "四属性灵根，修炼速度较慢，但胜在属性互补",
+    description: "四属性灵根，修炼速度稍快，胜在属性互补",
     rarity: 2,
-    speedBonus: 1.5,
+    speedBonus: 1.1,
     color: "#6B8E6B",
     element: "四属性",
   },
@@ -42,7 +42,7 @@ export const SPIRITUAL_ROOTS: Record<SpiritualRoot, SpiritualRootInfo> = {
     name: "三灵根",
     description: "三种属性灵根，修炼速度中等，是最常见的修仙者",
     rarity: 2,
-    speedBonus: 2.0,
+    speedBonus: 1.2,
     color: "#4A90D9",
     element: "三属性",
   },
@@ -50,7 +50,7 @@ export const SPIRITUAL_ROOTS: Record<SpiritualRoot, SpiritualRootInfo> = {
     name: "双灵根",
     description: "两种属性相辅相成，修炼速度上佳，被各派视为可造之材",
     rarity: 3,
-    speedBonus: 3.0,
+    speedBonus: 1.3,
     color: "#9B59B6",
     element: "双属性",
   },
@@ -58,7 +58,7 @@ export const SPIRITUAL_ROOTS: Record<SpiritualRoot, SpiritualRootInfo> = {
     name: "异灵根",
     description: "雷、冰、风等变异属性，修炼速度极快，万中无一",
     rarity: 4,
-    speedBonus: 5.0,
+    speedBonus: 1.4,
     color: "#E74C3C",
     element: "变异属性",
   },
@@ -66,7 +66,7 @@ export const SPIRITUAL_ROOTS: Record<SpiritualRoot, SpiritualRootInfo> = {
     name: "天灵根",
     description: "单一纯属性灵根，天道垂青，修炼速度冠绝天下，传说级资质",
     rarity: 5,
-    speedBonus: 10.0,
+    speedBonus: 1.5,
     color: "#F1C40F",
     element: "单一纯属性",
   },
@@ -78,8 +78,9 @@ export const SPIRITUAL_ROOTS: Record<SpiritualRoot, SpiritualRootInfo> = {
 
 export interface Realm {
   name: string;           // 境界名称
-  levels: number;         // 层数（修仙阶段）
-  expRequired: number;    // 突破所需修炼值
+  levels: number;         // 层数
+  expRequired: number;    // 第1层所需修炼值
+  expIncrement: number;   // 每层递增
   lifespan: string;       // 寿元
   description: string;
 }
@@ -89,56 +90,64 @@ export const REALMS: Realm[] = [
   {
     name: "炼气期",
     levels: 13,
-    expRequired: 100,
+    expRequired: 50,
+    expIncrement: 10,
     lifespan: "百岁",
     description: "引天地灵气入体，淬炼肉身经脉，踏上修仙之路",
   },
   {
     name: "筑基期",
-    levels: 3, // 初期/中期/后期
-    expRequired: 300,
+    levels: 3,
+    expRequired: 250,
+    expIncrement: 100,
     lifespan: "二百余岁",
     description: "筑就道基，灵力凝实，从此仙凡有别",
   },
   {
     name: "结丹期",
     levels: 3,
-    expRequired: 600,
+    expRequired: 500,
+    expIncrement: 200,
     lifespan: "五百余岁",
     description: "凝结金丹，法力大增，可御器飞行，纵横一方",
   },
   {
     name: "元婴期",
     levels: 3,
-    expRequired: 1200,
+    expRequired: 1000,
+    expIncrement: 400,
     lifespan: "千余岁",
     description: "碎丹成婴，元神初成，可元婴出窍遨游天地",
   },
   {
     name: "化神期",
     levels: 3,
-    expRequired: 2500,
+    expRequired: 2000,
+    expIncrement: 800,
     lifespan: "两千余岁",
     description: "元婴化神，与天地共鸣，神通广大，人界巅峰",
   },
   {
     name: "炼虚期",
     levels: 3,
-    expRequired: 5000,
+    expRequired: 4000,
+    expIncrement: 1500,
     lifespan: "五千余岁",
     description: "炼神还虚，破碎虚空，可飞升灵界",
   },
   {
     name: "合体期",
     levels: 3,
-    expRequired: 10000,
+    expRequired: 8000,
+    expIncrement: 3000,
     lifespan: "万余岁",
     description: "法体合一，举手投足皆可引动天地之力",
   },
   {
     name: "大乘期",
     levels: 3,
-    expRequired: 20000,
+    expRequired: 16000,
+    expIncrement: 6000,
     lifespan: "数万岁",
     description: "大道初成，万法归一，灵界亦为一方霸主",
   },
@@ -146,6 +155,7 @@ export const REALMS: Realm[] = [
     name: "渡劫期",
     levels: 1,
     expRequired: 50000,
+    expIncrement: 0,
     lifespan: "与天地同寿",
     description: "渡过天劫，飞升仙界，从此跳出三界外不在五行中",
   },
@@ -314,6 +324,13 @@ export function getNextRealm(realmName: string): Realm | undefined {
   return idx >= 0 && idx < REALMS.length - 1 ? REALMS[idx + 1] : undefined;
 }
 
+/** 计算当前层突破所需修炼值 */
+export function getRequiredExp(realmName: string, realmLevel: number): number {
+  const realm = getCurrentRealm(realmName);
+  if (!realm) return 100;
+  return realm.expRequired + (realmLevel - 1) * realm.expIncrement;
+}
+
 /** 计算任务修炼值（含灵根加成） */
 export function calculateTaskExp(
   taskType: string,
@@ -335,20 +352,18 @@ export function canBreakthrough(
   const realm = getCurrentRealm(realmName);
   if (!realm) return false;
 
-  // 修炼值达到当前境界所需
-  if (cultivationExp < realm.expRequired) return false;
-
-  // 在当前境界的最高层则检查是否有下一个境界
+  // 当前境界最高层 → 检查能否突破到下一个大境界
   if (realmLevel >= realm.levels) {
     const nextRealm = getNextRealm(realmName);
-    if (!nextRealm) return false; // 已是最高境界
-    return cultivationExp >= nextRealm.expRequired;
+    if (!nextRealm) return false;
+    return cultivationExp >= getRequiredExp(realmName, realmLevel);
   }
 
-  return true;
+  // 同一境界内升级
+  return cultivationExp >= getRequiredExp(realmName, realmLevel);
 }
 
-/** 突破后返回新状态 */
+/** 突破后返回新状态（溢出修炼值保留） */
 export function performBreakthrough(
   realmName: string,
   realmLevel: number,
@@ -357,22 +372,24 @@ export function performBreakthrough(
   const realm = getCurrentRealm(realmName);
   if (!realm) return null;
 
+  const required = getRequiredExp(realmName, realmLevel);
+
   if (realmLevel < realm.levels) {
-    // 在当前境界升级
+    // 在当前境界升级，溢出保留
     return {
       newRealm: realmName,
       newLevel: realmLevel + 1,
-      newExp: 0,
+      newExp: cultivationExp - required,
     };
   }
 
-  // 突破到下一个境界
+  // 突破到下一个大境界，溢出保留
   const nextRealm = getNextRealm(realmName);
   if (!nextRealm) return null;
 
   return {
     newRealm: nextRealm.name,
     newLevel: 1,
-    newExp: 0,
+    newExp: cultivationExp - required,
   };
 }

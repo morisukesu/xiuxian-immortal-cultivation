@@ -9,7 +9,8 @@ datasource db {
 
 model User {
   id            String    @id @default(cuid())
-  name          String    // 修炼者道号
+  name          String    @unique // 账号名（唯一，登录用）
+  password      String?   // bcrypt 加密（新账号必填）
   email         String?   @unique
   bilibiliId    String?   @unique
   avatar        String?

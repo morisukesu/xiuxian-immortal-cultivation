@@ -48,4 +48,9 @@ next-env.d.ts
 
 # 视频制作辅助（不公开）
 VIDEO_*.md
-public/cover.html
+public/cover*.html
+EP0*_*.md
+# 软著材料（不公开）
+mobile/
+# 测试脚本（不公开）
+test-*.js

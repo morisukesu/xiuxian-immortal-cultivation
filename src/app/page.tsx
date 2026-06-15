@@ -128,20 +128,29 @@ export default function HomePage() {
                 className="text-stone-500 text-sm"
                 onClick={() => {
                   localStorage.removeItem("userId");
-                  router.push("/create");
+                  window.location.href = "/";
                 }}
               >
                 重开仙途
               </Button>
             </div>
           ) : (
-            <Button
-              className="w-full h-12 text-lg bg-gradient-to-r from-amber-600 to-yellow-600 hover:from-amber-500 hover:to-yellow-500"
-              onClick={() => router.push("/create")}
-            >
-              开启仙途
-              <Sparkles className="w-5 h-5 ml-2" />
-            </Button>
+            <div className="space-y-3">
+              <Button
+                className="w-full h-12 text-lg bg-gradient-to-r from-amber-600 to-yellow-600 hover:from-amber-500 hover:to-yellow-500"
+                onClick={() => router.push("/create")}
+              >
+                开启仙途
+                <Sparkles className="w-5 h-5 ml-2" />
+              </Button>
+              <Button
+                variant="ghost"
+                className="w-full text-stone-500 text-sm"
+                onClick={() => router.push("/login")}
+              >
+                已有道号？登录账号
+              </Button>
+            </div>
           )}
         </div>
 

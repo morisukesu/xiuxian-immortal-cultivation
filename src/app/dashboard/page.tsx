@@ -19,7 +19,7 @@ import {
   Home,
   Flame,
 } from "lucide-react";
-import { SPIRITUAL_ROOTS, TASK_TYPES, REALMS, getCurrentRealm, getNextRealm } from "@/lib";
+import { SPIRITUAL_ROOTS, TASK_TYPES, REALMS, getCurrentRealm, getNextRealm, getRequiredExp } from "@/lib";
 import type { SpiritualRoot } from "@/lib";
 import { toast } from "sonner";
 
@@ -169,7 +169,7 @@ export default function DashboardPage() {
       await generateNarrative(data.cultivator, taskId);
 
       // 随机触发奇遇（概率由 API 控制：30% + 每日上限3次）
-      setTimeout(async () => {
+      (async () => {
         try {
           const encRes = await fetch(`/api/encounter?userId=${userId}`);
           const encData = await encRes.json();
@@ -187,7 +187,7 @@ export default function DashboardPage() {
         } catch {
           // 静默失败
         }
-      }, 2000);
+      })();
     } catch {
       toast.error("操作失败");
     }
@@ -371,7 +371,7 @@ export default function DashboardPage() {
 
   const realmData = getCurrentRealm(cultivator.realm);
   const nextRealm = getNextRealm(cultivator.realm);
-  const expNeeded = realmData?.expRequired || 100;
+  const expNeeded = getRequiredExp(cultivator.realm, cultivator.realmLevel);
   const expPercent = Math.min(100, Math.floor((cultivator.cultivationExp / expNeeded) * 100));
   const rootInfo = SPIRITUAL_ROOTS[cultivator.spiritualRoot];
 
@@ -559,18 +559,26 @@ export default function DashboardPage() {
 
           {/* 快捷创建任务 */}
           <div className="flex gap-2 pt-2 flex-wrap">
-            {Object.entries(TASK_TYPES).map(([key, taskType]) => (
-              <Button
-                key={key}
-                variant="outline"
-                size="sm"
-                className="border-stone-700 text-stone-400 hover:text-amber-400 hover:border-amber-700"
-                onClick={() => createTask(key)}
-                disabled={tasks.some((t) => t.type === key && !t.completed)}
-              >
-                {taskType.icon} {taskType.name}
-              </Button>
-            ))}
+            {Object.entries(TASK_TYPES).map(([key, taskType]) => {
+              const completedCount = tasks.filter((t) => t.type === key && t.completed).length;
+              const atLimit = completedCount >= taskType.dailyMax;
+              const hasPending = tasks.some((t) => t.type === key && !t.completed);
+              return (
+                <Button
+                  key={key}
+                  variant="outline"
+                  size="sm"
+                  className={`border-stone-700 hover:text-amber-400 hover:border-amber-700 ${
+                    atLimit ? "text-stone-600 cursor-not-allowed" : "text-stone-400"
+                  }`}
+                  onClick={() => createTask(key)}
+                  disabled={hasPending || atLimit}
+                >
+                  {taskType.icon} {taskType.name}
+                  {atLimit ? " (已满)" : ""}
+                </Button>
+              );
+            })}
           </div>
         </CardContent>
       </Card>
@@ -630,6 +638,12 @@ export default function DashboardPage() {
                   </button>
                 ))}
               </div>
+              <button
+                className="w-full text-center p-2 text-xs text-stone-600 hover:text-stone-400 transition-colors"
+                onClick={() => setEncounter(null)}
+              >
+                暂不处理，继续修炼
+              </button>
             </div>
           )}
 
