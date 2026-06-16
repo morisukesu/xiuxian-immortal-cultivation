@@ -52,5 +52,9 @@ public/cover*.html
 EP0*_*.md
 # 软著材料（不公开）
 mobile/
+# 备案材料（含隐私信息）
+ICP*.md
+# 规划文档（不公开）
+移动端*.md
 # 测试脚本（不公开）
 test-*.js
