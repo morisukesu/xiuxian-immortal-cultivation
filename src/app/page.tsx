@@ -137,6 +137,15 @@ export default function HomePage() {
         </div>
 
         {/* 底部 */}
+        <button
+          className="text-stone-600 text-xs underline pt-2"
+          onClick={() => {
+            localStorage.clear();
+            window.location.href = "/";
+          }}
+        >
+          加载异常？清除缓存重试
+        </button>
         <p className="text-stone-700 text-xs pt-4">
           同人创作 · 致敬凡人修仙传 · 与官方无关
         </p>
