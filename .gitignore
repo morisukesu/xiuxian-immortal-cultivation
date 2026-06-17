@@ -60,3 +60,4 @@ ICP*.md
 scripts/
 # 测试脚本（不公开）
 test-*.js
+cultivation-mobile/
