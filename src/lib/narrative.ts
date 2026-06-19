@@ -1,20 +1,9 @@
 // ============================================================
-// AI 叙事引擎 — 调用 Claude API 生成修炼叙事
+// AI 叙事引擎 — 使用 OpenAI 兼容接口
 // ============================================================
 
-import Anthropic from "@anthropic-ai/sdk";
+import { getAIClient, chatWithAI } from "./ai-client";
 import { SpiritualRoot, getCurrentRealm, getNextRealm, BREAKTHROUGH_ANIMATIONS, NPCS } from "./cultivation-data";
-
-// 延迟初始化，避免 build 时无 key 报错
-let anthropic: Anthropic | null = null;
-function getClient(): Anthropic {
-  if (!anthropic) {
-    anthropic = new Anthropic({
-      apiKey: process.env.ANTHROPIC_API_KEY || "",
-    });
-  }
-  return anthropic;
-}
 
 // ============================================================
 // 通用 System Prompt
@@ -62,7 +51,7 @@ export async function generateDailyCultivationNarrative(params: {
 
   const taskName = taskNames[params.taskType] || "修炼";
 
-  const prompt = `生成一段修仙小说式的日常修炼叙事。
+  const userMessage = `生成一段修仙小说式的日常修炼叙事。
 
 【修炼者信息】
 - 道号：${params.cultivatorName}
@@ -89,20 +78,16 @@ ${params.taskDescription ? `- 额外描述：${params.taskDescription}` : ""}
 }`;
 
   try {
-    const response = await getClient().messages.create({
-      model: "claude-sonnet-4-6",
-      max_tokens: 500,
-      system: WORLD_SYSTEM_PROMPT,
-      messages: [{ role: "user", content: prompt }],
-      temperature: 0.8,
-    });
+    const response = await chatWithAI(
+      [{ role: "user", content: userMessage }],
+      {
+        system: WORLD_SYSTEM_PROMPT,
+        maxTokens: 500,
+        temperature: 0.8,
+      }
+    );
 
-    const text = response.content
-      .filter((c) => c.type === "text")
-      .map((c) => c.text)
-      .join("");
-
-    // 尝试从 text 中提取 JSON
+    const text = response.text;
     const jsonMatch = text.match(/\{[\s\S]*\}/);
     if (jsonMatch) {
       return JSON.parse(jsonMatch[0]);
@@ -136,7 +121,7 @@ export async function generateBreakthroughNarrative(params: {
     ? `突破大境界：从 ${params.fromRealm} 突破到 ${params.toRealm}！`
     : `${params.fromRealm} 第${params.fromLevel}层 → 第${params.toLevel}层`;
 
-  const prompt = `生成一段修仙小说式的境界突破叙事。
+  const userMessage = `生成一段修仙小说式的境界突破叙事。
 
 【修炼者信息】
 - 道号：${params.cultivatorName}
@@ -162,19 +147,16 @@ ${scene}
 }`;
 
   try {
-    const response = await getClient().messages.create({
-      model: "claude-sonnet-4-6",
-      max_tokens: 600,
-      system: WORLD_SYSTEM_PROMPT,
-      messages: [{ role: "user", content: prompt }],
-      temperature: 0.9,
-    });
+    const response = await chatWithAI(
+      [{ role: "user", content: userMessage }],
+      {
+        system: WORLD_SYSTEM_PROMPT,
+        maxTokens: 600,
+        temperature: 0.9,
+      }
+    );
 
-    const text = response.content
-      .filter((c) => c.type === "text")
-      .map((c) => c.text)
-      .join("");
-
+    const text = response.text;
     const jsonMatch = text.match(/\{[\s\S]*\}/);
     if (jsonMatch) {
       return JSON.parse(jsonMatch[0]);
@@ -209,7 +191,7 @@ export async function generateEncounterNarrative(params: {
   choices: { text: string; risk: "low" | "medium" | "high"; hint: string }[];
   mood: string;
 }> {
-  const prompt = `生成一段修仙世界的随机奇遇事件。
+  const userMessage = `生成一段修仙世界的随机奇遇事件。
 
 【修炼者信息】
 - 道号：${params.cultivatorName}
@@ -235,19 +217,16 @@ export async function generateEncounterNarrative(params: {
 }`;
 
   try {
-    const response = await getClient().messages.create({
-      model: "claude-sonnet-4-6",
-      max_tokens: 500,
-      system: WORLD_SYSTEM_PROMPT,
-      messages: [{ role: "user", content: prompt }],
-      temperature: 0.9,
-    });
+    const response = await chatWithAI(
+      [{ role: "user", content: userMessage }],
+      {
+        system: WORLD_SYSTEM_PROMPT,
+        maxTokens: 500,
+        temperature: 0.9,
+      }
+    );
 
-    const text = response.content
-      .filter((c) => c.type === "text")
-      .map((c) => c.text)
-      .join("");
-
+    const text = response.text;
     const jsonMatch = text.match(/\{[\s\S]*\}/);
     if (jsonMatch) {
       return JSON.parse(jsonMatch[0]);
@@ -291,7 +270,7 @@ export async function generateNPCDialogue(params: {
   npcMood: string;
   reward?: { type: string; description: string };
 }> {
-  const prompt = `生成一段修仙世界中 NPC 与玩家的对话。
+  const userMessage = `生成一段修仙世界中 NPC 与玩家的对话。
 
 【NPC】
 - 名字：${params.npcName}
@@ -316,19 +295,16 @@ ${params.historySummary ? `- 过往交互：${params.historySummary}` : ""}
 }`;
 
   try {
-    const response = await getClient().messages.create({
-      model: "claude-sonnet-4-6",
-      max_tokens: 400,
-      system: WORLD_SYSTEM_PROMPT,
-      messages: [{ role: "user", content: prompt }],
-      temperature: 0.8,
-    });
+    const response = await chatWithAI(
+      [{ role: "user", content: userMessage }],
+      {
+        system: WORLD_SYSTEM_PROMPT,
+        maxTokens: 400,
+        temperature: 0.8,
+      }
+    );
 
-    const text = response.content
-      .filter((c) => c.type === "text")
-      .map((c) => c.text)
-      .join("");
-
+    const text = response.text;
     const jsonMatch = text.match(/\{[\s\S]*\}/);
     if (jsonMatch) {
       return JSON.parse(jsonMatch[0]);

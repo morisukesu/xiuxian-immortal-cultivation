@@ -18,10 +18,19 @@ import {
   History,
   Home,
   Flame,
+  Shield,
+  PawPrint,
+  Map,
+  Heart,
 } from "lucide-react";
 import { SPIRITUAL_ROOTS, TASK_TYPES, REALMS, getCurrentRealm, getNextRealm, getRequiredExp, calculateTaskExp } from "@/lib";
 import type { SpiritualRoot } from "@/lib";
 import { toast } from "sonner";
+import BodyMeridianDiagram from "@/components/BodyMeridianDiagram";
+import EquipmentPanel from "@/components/EquipmentPanel";
+import PetPanel from "@/components/PetPanel";
+import BattleOverlay from "@/components/BattleOverlay";
+import MapExplorer from "@/components/MapExplorer";
 
 interface Cultivator {
   id: string;
@@ -69,6 +78,8 @@ export default function DashboardPage() {
     choices: { riskLevel: string; text: string; hint: string }[];
   } | null>(null);
   const [encounterResult, setEncounterResult] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState<"cultivation" | "body" | "equipment" | "pet" | "explore">("cultivation");
+  const [showBattle, setShowBattle] = useState(false);
 
   // 加载用户数据
   const loadData = useCallback(async () => {
@@ -524,8 +535,60 @@ export default function DashboardPage() {
         </Card>
       )}
 
-      {/* 每日任务 */}
-      <Card className="bg-stone-800/60 border-stone-600/50">
+      {/* Tab 导航 */}
+      <div className="flex gap-1 bg-stone-800/50 p-1 rounded-lg">
+        <button
+          className={`flex-1 flex items-center justify-center gap-1 py-2 px-3 rounded-md text-sm transition-all ${
+            activeTab === "cultivation" ? "bg-amber-600 text-white" : "text-stone-400 hover:text-stone-200"
+          }`}
+          onClick={() => setActiveTab("cultivation")}
+        >
+          <Flame className="w-4 h-4" />
+          修炼
+        </button>
+        <button
+          className={`flex-1 flex items-center justify-center gap-1 py-2 px-3 rounded-md text-sm transition-all ${
+            activeTab === "body" ? "bg-emerald-600 text-white" : "text-stone-400 hover:text-stone-200"
+          }`}
+          onClick={() => setActiveTab("body")}
+        >
+          <Heart className="w-4 h-4" />
+          身体
+        </button>
+        <button
+          className={`flex-1 flex items-center justify-center gap-1 py-2 px-3 rounded-md text-sm transition-all ${
+            activeTab === "equipment" ? "bg-blue-600 text-white" : "text-stone-400 hover:text-stone-200"
+          }`}
+          onClick={() => setActiveTab("equipment")}
+        >
+          <Shield className="w-4 h-4" />
+          装备
+        </button>
+        <button
+          className={`flex-1 flex items-center justify-center gap-1 py-2 px-3 rounded-md text-sm transition-all ${
+            activeTab === "pet" ? "bg-purple-600 text-white" : "text-stone-400 hover:text-stone-200"
+          }`}
+          onClick={() => setActiveTab("pet")}
+        >
+          <PawPrint className="w-4 h-4" />
+          灵兽
+        </button>
+        <button
+          className={`flex-1 flex items-center justify-center gap-1 py-2 px-3 rounded-md text-sm transition-all ${
+            activeTab === "explore" ? "bg-amber-600 text-white" : "text-stone-400 hover:text-stone-200"
+          }`}
+          onClick={() => setActiveTab("explore")}
+        >
+          <Map className="w-4 h-4" />
+          探索
+        </button>
+      </div>
+
+      {/* Tab 内容 */}
+      {activeTab === "cultivation" && (
+        <>
+          {/* 每日任务 */}
+          <Card className="bg-stone-800/60 border-stone-600/50">
         <CardHeader className="pb-2">
           <CardTitle className="text-base text-stone-100 flex items-center gap-2">
             <TrendingUp className="w-4 h-4 text-amber-400" />
@@ -748,6 +811,32 @@ export default function DashboardPage() {
           </ScrollArea>
         </CardContent>
       </Card>
+
+        </>
+      )}
+
+      {activeTab === "body" && (
+        <BodyMeridianDiagram userId={userId} />
+      )}
+
+      {activeTab === "equipment" && (
+        <EquipmentPanel userId={userId} />
+      )}
+
+      {activeTab === "pet" && (
+        <PetPanel userId={userId} />
+      )}
+
+      {activeTab === "explore" && (
+        <MapExplorer userId={userId} />
+      )}
+
+      {/* 战斗浮层 */}
+      <BattleOverlay
+        userId={userId}
+        isOpen={showBattle}
+        onClose={() => setShowBattle(false)}
+      />
 
       {/* 底部导航 */}
       <div className="flex justify-between items-center py-4">
