@@ -33,7 +33,37 @@ model Cultivator {
   stamina           Int      @default(100)
   breakthroughCount Int      @default(0)
   title             String?
+  
+  // 新增：身体系统
+  bodyState         String?  // JSON: BodySystemState
+  bodyToughness     Int      @default(50)
+  
+  // 新增：战斗属性
+  hp                Int      @default(100)
+  maxHp             Int      @default(100)
+  mp                Int      @default(50)
+  maxMp             Int      @default(50)
+  
+  // 新增：装备系统 (存储已获得的装备列表)
+  equipment         Equipment[]
+  equippedItems     String?  // JSON: { slot: equipmentId }
+  
+  // 新增：灵兽系统
+  pets              Pet[]
+  
+  // 新增：地图探索
+  currentMap        String?  // JSON: MapState
+  mapLevel          Int      @default(1)
+  
+  // 新增：气运/幸运值
+  luck              Int      @default(50)
+  
+  // 新增：宗门/势力
+  sect              String?
+  sectContribution  Int      @default(0)
+  
   createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
   events            GameEvent[]
 }
 
@@ -41,13 +71,11 @@ model DailyTask {
   id               String   @id @default(cuid())
   userId           String
   user             User     @relation(fields: [userId], references: [id])
-  type             String   @default("STUDY") // STUDY, EXERCISE, SLEEP, MEDITATE, WORK, CUSTOM
+  type             String   @default("STUDY") // STUDY, EXERCISE, SLEEP, MEDITATE, CUSTOM
   description      String?
   completed        Boolean  @default(false)
   cultivationBonus Int      @default(0)
   date             DateTime @default(now())
-
-  @@index([userId, date])
 }
 
 model GameEvent {
@@ -61,8 +89,6 @@ model GameEvent {
   chosenOption Int?
   reward       String?
   createdAt    DateTime @default(now())
-
-  @@index([cultivatorId, createdAt])
 }
 
 model ShareCard {
@@ -73,6 +99,65 @@ model ShareCard {
   description   String
   bilibiliUrl   String?
   createdAt     DateTime @default(now())
+}
 
-  @@index([cultivatorId])
+// ============================================================
+// 新增：装备系统
+// ============================================================
+
+model Equipment {
+  id          String   @id @default(cuid())
+  cultivatorId String
+  cultivator  Cultivator @relation(fields: [cultivatorId], references: [id], onDelete: Cascade)
+  
+  name        String
+  type        String   // armor, weapon, accessory, artifact
+  slot        String   // head, neck, body, leftHand, rightHand, ring1, ring2, belt, boots, weapon
+  quality     String   // common, uncommon, rare, epic, legendary
+  
+  baseStats   String   // JSON: { damage: 50, defense: 20, ... }
+  affixes     String   // JSON: Affix[]
+  
+  level       Int      @default(1)
+  exp         Int      @default(0)
+  description String
+  icon        String
+  
+  isEquipped  Boolean  @default(false)
+  createdAt   DateTime @default(now())
+}
+
+// ============================================================
+// 新增：灵兽系统
+// ============================================================
+
+model Pet {
+  id          String   @id @default(cuid())
+  cultivatorId String
+  cultivator  Cultivator @relation(fields: [cultivatorId], references: [id], onDelete: Cascade)
+  
+  name        String
+  type        String   // beast, dragon, bird, demon, spirit, hybrid
+  attribute   String   // fire, water, earth, wind, lightning, ice, dark, light
+  quality     String   // common, uncommon, rare, epic, legendary
+  
+  level       Int      @default(1)
+  exp         Int      @default(0)
+  hp          Int      @default(100)
+  maxHp       Int      @default(100)
+  attack      Int      @default(20)
+  defense     Int      @default(15)
+  speed       Int      @default(10)
+  
+  loyalty     Int      @default(30)
+  mastery     Int      @default(0)
+  isSummoned  Boolean  @default(false)
+  isBonded    Boolean  @default(false)
+  
+  description String
+  icon        String
+  skill       String
+  skillEffect String
+  
+  createdAt   DateTime @default(now())
 }
