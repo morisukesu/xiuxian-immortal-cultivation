@@ -12,6 +12,17 @@
 
 ---
 
+## 🙏 致谢
+
+本项目深受 [原始仓库作者](https://github.com/YoungJack/cultivation-simulator) 开源项目的启发，在此特别感谢：
+
+- **原始仓库作者** - 感谢提供精美的 HTML 原型和完整的游戏设计灵感
+- **《凡人修仙传》作者忘语** - 感谢创作这部经典修仙小说，为无数修仙爱好者提供了精神食粮
+
+本项目是在原作启发下的二次创作，致敬原始作者的开源精神和文学作品的深远影响。
+
+---
+
 ## 🌟 核心特色
 
 ### 🔮 AI 驱动的修仙叙事
@@ -78,8 +89,8 @@
 
 ```bash
 # 克隆仓库
-git clone https://github.com/morisukesu/cultivation-simulator.git
-cd cultivation-simulator
+git clone https://github.com/morisukesu/xiuxian-immortal-cultivation.git
+cd xiuxian-immortal-cultivation
 
 # 安装依赖
 npm install
@@ -155,7 +166,7 @@ npm run dev
 ## 📁 项目结构
 
 ```
-cultivation-simulator/
+xiuxian-immortal-cultivation/
 ├── src/
 │   ├── app/                    # Next.js 应用路由
 │   │   ├── api/                # API 路由
@@ -256,15 +267,18 @@ AI_MODEL="gpt-4o-mini"
 
 ## 📜 许可证
 
-本项目为同人创作，致敬《凡人修仙传》作者忘语。与官方无关。
+本项目为同人创作，致敬《凡人修仙传》作者忘语与原始仓库作者的开源贡献。与官方无关。
 
 ---
 
 ## 🙏 致谢
 
-- **灵感来源**：《凡人修仙传》- 忘语
-- **技术栈**：Next.js, React, Prisma, Tailwind CSS
-- **AI 服务**：OpenAI 兼容接口
+本项目深受 [原始仓库作者](https://github.com/YoungJack/cultivation-simulator) 开源项目的启发，在此特别感谢：
+
+- **原始仓库作者** - 感谢提供精美的 HTML 原型和完整的游戏设计灵感
+- **《凡人修仙传》作者忘语** - 感谢创作这部经典修仙小说，为无数修仙爱好者提供了精神食粮
+
+本项目是在原作启发下的二次创作，致敬原始作者的开源精神和文学作品的深远影响。
 
 ---
 
