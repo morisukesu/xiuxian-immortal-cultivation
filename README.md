@@ -4,6 +4,20 @@
 
 ---
 
+## 🎮 在线体验
+
+🔗 **Demo 地址：** http://36.213.31.152:3000
+
+> ⚠️ Demo 为开发环境演示，数据可能随时重置。建议自行部署获得完整体验。
+
+### 一键部署到 Vercel
+
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fmorisukesu%2Fxiuxian-immortal-cultivation&project-name=xiuxian-immortal-cultivation&framework=nextjs)
+
+点击上方按钮即可将项目一键部署到 Vercel，获得永久的在线 Demo 地址。
+
+---
+
 ## 📖 游戏简介
 
 《修仙模拟器》是一款基于 Next.js 开发的**互动式修仙角色扮演游戏**，灵感来源于经典玄幻小说《凡人修仙传》。玩家将扮演一名凡人修士，通过完成现实中的修炼任务（学习、运动、早睡等），在修仙世界中积累修为、突破境界、探索秘境。
@@ -199,6 +213,7 @@ xiuxian-immortal-cultivation/
 ├── public/                    # 静态资源
 ├── .env.example              # 环境变量示例
 ├── next.config.ts            # Next.js 配置
+├── vercel.json               # Vercel 部署配置
 └── package.json              # 项目配置
 ```
 
@@ -268,17 +283,6 @@ AI_MODEL="gpt-4o-mini"
 ## 📜 许可证
 
 本项目为同人创作，致敬《凡人修仙传》作者忘语与原始仓库作者的开源贡献。与官方无关。
-
----
-
-## 🙏 致谢
-
-本项目深受 [原始仓库作者](https://github.com/YoungJack/cultivation-simulator) 开源项目的启发，在此特别感谢：
-
-- **原始仓库作者** - 感谢提供精美的 HTML 原型和完整的游戏设计灵感
-- **《凡人修仙传》作者忘语** - 感谢创作这部经典修仙小说，为无数修仙爱好者提供了精神食粮
-
-本项目是在原作启发下的二次创作，致敬原始作者的开源精神和文学作品的深远影响。
 
 ---
 
