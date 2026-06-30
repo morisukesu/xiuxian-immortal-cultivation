@@ -1,0 +1,10 @@
+{
+  "framework": "nextjs",
+  "buildCommand": "npx prisma generate && next build",
+  "installCommand": "npm install --include=dev",
+  "env": {
+    "DATABASE_URL": "file:./dev.db",
+    "AI_PROVIDER": "openai",
+    "AI_MODEL": "gpt-4o-mini"
+  }
+}
