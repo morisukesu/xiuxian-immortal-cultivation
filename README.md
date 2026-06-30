@@ -6,15 +6,26 @@
 
 ## 🎮 在线体验
 
-🔗 **Demo 地址：** http://36.213.31.152:3000
-
-> ⚠️ Demo 为开发环境演示，数据可能随时重置。建议自行部署获得完整体验。
-
-### 一键部署到 Vercel
+### 方式一：一键部署到 Vercel（推荐）
 
 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fmorisukesu%2Fxiuxian-immortal-cultivation&project-name=xiuxian-immortal-cultivation&framework=nextjs)
 
 点击上方按钮即可将项目一键部署到 Vercel，获得永久的在线 Demo 地址。
+
+### 方式二：本地运行
+
+```bash
+git clone https://github.com/morisukesu/xiuxian-immortal-cultivation.git
+cd xiuxian-immortal-cultivation
+npm install
+cp .env.example .env
+npx prisma generate
+npm run dev
+```
+
+打开 http://localhost:3000 即可体验！
+
+> 💡 提示：AI 叙事功能需要配置 API Key，但游戏核心功能（修炼、战斗、装备、灵兽、地图）无需 API 即可运行。
 
 ---
 
