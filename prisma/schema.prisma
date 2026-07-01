@@ -1,0 +1,122 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model User {
+  id          String   @id @default(cuid())
+  username    String   @unique
+  password    String
+  role        String   @default("player")
+  banned      Boolean  @default(false)
+  banReason   String?
+  lastLogin   DateTime?
+  createdAt   DateTime @default(now())
+  cultivator  Cultivator?
+  adminLogs   AdminLog[]
+}
+
+model Cultivator {
+  id                String   @id @default(cuid())
+  userId            String   @unique
+  user              User     @relation(fields: [userId], references: [id])
+  name              String
+  daoName           String?
+  spiritualRoot     String   @default("五行杂灵根")
+  rootType          Int      @default(0)
+  constitution      Int      @default(0)
+  realmIndex        Int      @default(0)
+  exp               Int      @default(0)
+  totalExp          Int      @default(0)
+  hp                Int      @default(100)
+  maxHp             Int      @default(100)
+  mp                Int      @default(50)
+  maxMp             Int      @default(50)
+  permAtk           Int      @default(0)
+  permDef           Int      @default(0)
+  gold              Int      @default(0)
+  herbs             Int      @default(0)
+  wudao             Int      @default(0)
+  totalBreakthroughs Int     @default(0)
+  totalPills         Int     @default(0)
+  totalAdventures    Int     @default(0)
+  deathCount         Int     @default(0)
+  rebirths           Int     @default(0)
+  inventoryData     String?
+  equipmentData     String?
+  techniqueData     String?
+  petData           String?
+  bodyData          String?
+  yinsiData         String?
+  familyData        String?
+  shopData          String?
+  auctionData       String?
+  customData        String?
+  tribulationData   String?
+  achievements      String?
+  isGhostCultivator Boolean  @default(false)
+  state             Json?
+  isMartialPath     Boolean  @default(false)
+  lastOnline        DateTime @default(now())
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  events            GameEvent[]
+  dailyTasks        DailyTask[]
+  @@index([realmIndex])
+}
+
+model GameEvent {
+  id            String   @id @default(cuid())
+  cultivatorId  String
+  cultivator    Cultivator @relation(fields: [cultivatorId], references: [id])
+  type          String
+  title         String
+  narrative     String
+  choices       String?
+  chosenOption  Int?
+  reward        String?
+  resultNarrative String?
+  aiGenerated   Boolean  @default(false)
+  aiModel       String?
+  seed          String?
+  difficulty    Int      @default(1)
+  createdAt     DateTime @default(now())
+  @@index([cultivatorId, createdAt])
+  @@index([type, createdAt])
+}
+
+model DailyTask {
+  id              String   @id @default(cuid())
+  cultivatorId    String
+  cultivator      Cultivator @relation(fields: [cultivatorId], references: [id])
+  type            String
+  description     String?
+  completed       Boolean  @default(false)
+  cultivationBonus Int     @default(0)
+  date            DateTime @default(now())
+  @@index([cultivatorId, date])
+}
+
+model WorldConfig {
+  id          String   @id @default(cuid())
+  key         String   @unique
+  value       String
+  description String?
+  updatedBy   String?
+  updatedAt   DateTime @updatedAt
+}
+
+model AdminLog {
+  id          String   @id @default(cuid())
+  adminId     String
+  admin       User     @relation(fields: [adminId], references: [id])
+  action      String
+  target      String?
+  detail      String?
+  createdAt   DateTime @default(now())
+  @@index([createdAt])
+}
